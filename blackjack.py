@@ -1,6 +1,7 @@
 import random
 import time
 import os
+import PySimpleGUI as sg
 
 
 class Player:
@@ -8,9 +9,7 @@ class Player:
         self.name = name
         self.hand = hand
 
-
 os.system("pip install pysimplegui")
-
 
 def total(hand):
     num = 0
@@ -63,7 +62,7 @@ players = []
 mode = input("Type 1 to play against others, type 2 to play against the House: ")
 if mode == "1":
     amt = 0
-    while amt < 1 or amt > 6:
+    while amt < 1 or amt > 4:
         amt = input("How many players? ")
         amt = int(amt)
     for i in range(1, amt + 1):
@@ -82,6 +81,25 @@ for i in range(0, 2):
 bj = False
 fcc = False
 
+### Create Window after Initialization
+log_column = [
+    [sg.Multiline()],
+    [sg.Button("hit"),
+    sg.Button("pass")],
+]
+
+table_column = [
+    [sg.Text("something else")]
+]
+
+layout = [
+    [
+        sg.Column(log_column),
+        sg.VSeparator(),
+        sg.Column(table_column),
+    ]
+]
+
 for player in players:
     insta = total(player.hand)
     if insta == 21:
@@ -93,9 +111,14 @@ if mode != "1":
         winner.append(house)
         bj = True
 
+
+window = sg.Window("Blackjack", layout=layout, margins=(400,400))
 if not bj:
     for player in players:
         while True:
+            event, values = window.read()
+            if event == sg.WIN_CLOSED:
+                break
             print(f"({player.name}) You have {total(player.hand)} (hand: {player.hand})")
             response = input(f"({player.name}) Add another card? (yes/no): ")
             if response == "no":
