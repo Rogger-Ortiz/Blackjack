@@ -44,6 +44,9 @@ def giveCard(user, cards):
 
 
 winner = []
+players = []
+house = None
+amt = 1
 deck = ["A", "A", "A", "A",
         2, 2, 2, 2,
         3, 3, 3, 3,
@@ -58,67 +61,120 @@ deck = ["A", "A", "A", "A",
         "Q", "Q", "Q", "Q",
         "K", "K", "K", "K"]
 
-players = []
-mode = input("Type 1 to play against others, type 2 to play against the House: ")
-if mode == "1":
-    amt = 0
-    while amt < 1 or amt > 4:
-        amt = input("How many players? ")
-        amt = int(amt)
-    for i in range(1, amt + 1):
-        players.append(Player(input(f"Welcome Player {i}! Please enter your name: "), []))
-else:
-    p1 = Player(input("Welcome! Enter your name: "), [])
-    house = Player("House", [])
-    players = [p1]
+#####################################
+
+layout = [
+    [sg.Text("PvP or PvHouse?")],
+    [sg.Button("PvP"),sg.Button("PvHouse")]
+]
+window = sg.Window(title="Initializing...", layout=layout, margins= (400,400))
+while True:
+    event, values = window.read()
+    if event == sg.WIN_CLOSED:
+        exit()
+    if event == "PvP" or event == "PvHouse":
+        match event:
+            case "PvP":
+                mode = "PvP"
+                break
+            case "PvHouse":
+                mode = "PvHouse"
+                break
+        print("ERROR")
+        break
+window.close()
+print(f"playing {mode}")
+
+if mode == "PvP":
+    layout = [
+        [sg.Text(f"Playing {mode}, How many players?")],
+        [sg.Button("Two"),sg.Button("Three"),sg.Button("Four")]
+    ]
+    window = sg.Window(title="Initializing...", layout=layout, margins= (400,400))
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED:
+            exit()
+        else:
+            match event:
+                case "Two":
+                    amt=2
+                    break
+                case "Three":
+                    amt=3
+                    break
+                case "Four":
+                    amt=4
+                    break
+    window.close()
+    layoutArr = []
+    layoutArr.append(sg.Text("Please enter your names!"))
+    for i in range(amt):
+        layoutArr.append([sg.Multiline(key=f'pvpname{i}')])
+    layoutArr.append(sg.Button("Submit"))
+    layout = [layoutArr]
+    window = sg.Window(title="Initializing...", layout=layout, margins= (400,400))
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED:
+            exit()
+        if event == "Submit":
+            print("Submitted")
+            for i in range(amt):
+                players.append(Player(values[f"pvpname{i}"], []))
+                
+            break
+
+if mode == "PvHouse":
+    layout = [
+        [sg.Text(f"Welcome! What is your name?")],
+        [sg.Multiline(key="pvhname"),sg.Button("Submit")]
+    ]
+    window = sg.Window(title="Initializing...", layout=layout, margins= (400,400))
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED:
+            exit()
+        if event == "Submit":
+            p1 = Player(values["pvhname"], [])
+            house = Player("House", [])
+            players = [p1]
+            break
+
+window.close()
+print(f"With {amt} players")
+
+if mode != "PvP" and mode != "PvHouse":
+    print("Error with gamemode")
+    exit()
+
+############ Core Code ################
 
 for i in range(0, 2):
     for player in players:
         giveCard(player, deck)
-        if mode != "1":
+        if mode != "PvP":
             giveCard(house, deck)
 
 bj = False
 fcc = False
-
-### Create Window after Initialization
-log_column = [
-    [sg.Multiline()],
-    [sg.Button("hit"),
-    sg.Button("pass")],
-]
-
-table_column = [
-    [sg.Text("something else")]
-]
-
-layout = [
-    [
-        sg.Column(log_column),
-        sg.VSeparator(),
-        sg.Column(table_column),
-    ]
-]
 
 for player in players:
     insta = total(player.hand)
     if insta == 21:
         winner.append(player)
         bj = True
-if mode != "1":
+if mode != "PvP":
     insta = total(house.hand)
     if insta == 21:
         winner.append(house)
         bj = True
 
+#######################################
 
-window = sg.Window("Blackjack", layout=layout, margins=(400,400))
 if not bj:
     for player in players:
         while True:
-            event, values = window.read()
-            if event == sg.WIN_CLOSED:
-                break
             print(f"({player.name}) You have {total(player.hand)} (hand: {player.hand})")
             response = input(f"({player.name}) Add another card? (yes/no): ")
             if response == "no":
@@ -138,7 +194,7 @@ if not bj:
         if len(winner) > 0:
             break
 
-if mode != "1" and not bj:
+if mode != "PvP" and not bj:
     htotal = total(house.hand)
     while htotal < 21:
         print(f"(House) You have {total(house.hand)} (hand: {house.hand})")
