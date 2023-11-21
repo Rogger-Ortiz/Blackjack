@@ -159,30 +159,88 @@ for i in range(0, 2):
 bj = False
 fcc = False
 
-for player in players:
-    insta = total(player.hand)
-    if insta == 21:
-        winner.append(player)
-        bj = True
-if mode != "PvP":
-    insta = total(house.hand)
-    if insta == 21:
-        winner.append(house)
-        bj = True
+# Remove the ability to win instantly (helps with flow)
+# for player in players:
+#     insta = total(player.hand)
+#     if insta == 21:
+#         winner.append(player)
+#         bj = True
+# if mode != "PvP":
+#     insta = total(house.hand)
+#     if insta == 21:
+#         winner.append(house)
+#         bj = True
 
 #######################################
 
+response = ""
+playerPass = 0
 if not bj:
     for player in players:
         while True:
-            print(f"({player.name}) You have {total(player.hand)} (hand: {player.hand})")
-            response = input(f"({player.name}) Add another card? (yes/no): ")
+            leftCol = [
+                [sg.Text(f"({player.name}) You have {total(player.hand)} (hand: {player.hand})")],
+                [sg.Text(f"({player.name}) Add another card?")],
+                [sg.Button("Hit"), sg.Button("Pass")],
+            ]
+
+            rightCol = [
+                [sg.Text("Placeholder")]
+            ]
+
+            layout = [
+                [
+                    sg.Column(leftCol),
+                    sg.VSeparator(),
+                    sg.Column(rightCol),
+                ]
+            ]
+            window = sg.Window(title="Blackjack", layout=layout, margins= (400,400))
+            while True:
+                event, values = window.read()
+                if event == sg.WIN_CLOSED:
+                    exit()
+                if event == "Hit" or event == "Pass":
+                    match event:
+                        case "Hit":
+                            response = "yes"
+                            window.close()
+                            break
+                        case "Pass":
+                            response = "no"
+                            window.close()
+                            break
             if response == "no":
                 break
             else:
                 giveCard(player, deck)
                 if total(player.hand) > 21:
-                    print(f"({player.name}) You busted with {total(player.hand)}! (Hand: {player.hand})")
+                    leftCol = [
+                        [sg.Text(f"({player.name}) You have {total(player.hand)} (hand: {player.hand})")],
+                        [sg.Text(f"({player.name}) You busted with {total(player.hand)}! (Hand: {player.hand})")],
+                        [sg.Button("Pass Turn")],
+                    ]
+
+                    rightCol = [
+                        [sg.Text("Placeholder")]
+                    ]
+
+                    layout = [
+                        [
+                            sg.Column(leftCol),
+                            sg.VSeparator(),
+                            sg.Column(rightCol),
+                        ]
+                    ]
+                    window = sg.Window(title="Blackjack", layout=layout, margins= (400,400))
+                    while True:
+                        event, values = window.read()
+                        if event == "Pass Turn":
+                            window.close()
+                            playerPass = 1
+                            break
+                if playerPass:
+                    playerPass = 0
                     break
                 else:
                     if len(player.hand) == 5:
@@ -196,21 +254,52 @@ if not bj:
 
 if mode != "PvP" and not bj:
     htotal = total(house.hand)
+    housePass = 0
     while htotal < 21:
-        print(f"(House) You have {total(house.hand)} (hand: {house.hand})")
-        needed = 21 - htotal
-        if needed > 4:
-            print(f"(House) Add another card? (yes/no): yes")
-            giveCard(house, deck)
-        else:
-            print(f"(House) Add another card? (yes/no): no")
+#########################################################################################
+        leftCol = [
+            [sg.Text(f"({house.name}) You have {total(house.hand)} (hand: {house.hand})")],
+            [sg.Text(f"({house.name}) Add another card?")],
+            [sg.Button("Hit"), sg.Button("Pass")],
+        ]
+
+        rightCol = [
+            [sg.Text("Placeholder")]
+        ]
+
+        layout = [
+            [
+                sg.Column(leftCol),
+                sg.VSeparator(),
+                sg.Column(rightCol),
+            ]
+        ]
+        window = sg.Window(title="Blackjack", layout=layout, margins= (400,400))
+        while True:
+            event, values = window.read()
+            if event == sg.WIN_CLOSED:
+                exit()
+            time.sleep(1)
+            window.write_event_value("close", "1 second passed")
+            if event == "close":
+                window.close()
+            needed = 21 - htotal
+            if needed > 4:
+                giveCard(house, deck)
+            else:
+                housePass = 1
+                break
+            if total(house.hand) > 21:
+                print(f"The House has busted! (Hand: {house.hand})")
+                housePass = 1
+                break
+            else:
+                htotal = total(house.hand)
+        if housePass:
+            housePass = 0
             break
-        if total(house.hand) > 21:
-            print(f"The House has busted! (Hand: {house.hand})")
-            break
-        else:
-            htotal = total(house.hand)
-        time.sleep(1)
+            
+#########################################################################################
 
     print("-------------------------------------------------------------------")
     players.append(house)
@@ -238,7 +327,7 @@ if not fcc and not bj:
 if not fcc and not bj:
     for player in winner:
         print(f"{player.name} wins! (Hand: {player.hand})")
-        if mode != "1":
+        if mode != "PvP":
             print(f"House hand: {house.hand}")
 
 while True:
