@@ -5,6 +5,9 @@ import time
 import os
 os.system("pip install pysimplegui")
 
+theme = "DarkBrown1"
+sg.theme(theme)
+
 
 class Player:
     def __init__(self, name, hand):
@@ -68,7 +71,8 @@ layout = [
     [sg.Text("PvP or PvHouse?")],
     [sg.Button("PvP"), sg.Button("PvHouse")]
 ]
-window = sg.Window(title="Initializing...", layout=layout, margins=(300, 300))
+window = sg.Window(title="Initializing...", layout=layout,
+                   margins=(300, 300))
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
