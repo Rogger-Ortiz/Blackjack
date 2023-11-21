@@ -1,9 +1,9 @@
+import json
+import PySimpleGUI as sg
 import random
 import time
 import os
 os.system("pip install pysimplegui")
-import PySimpleGUI as sg
-import json
 
 
 class Player:
@@ -66,9 +66,9 @@ deck = ["A", "A", "A", "A",
 
 layout = [
     [sg.Text("PvP or PvHouse?")],
-    [sg.Button("PvP"),sg.Button("PvHouse")]
+    [sg.Button("PvP"), sg.Button("PvHouse")]
 ]
-window = sg.Window(title="Initializing...", layout=layout, margins= (400,400))
+window = sg.Window(title="Initializing...", layout=layout, margins=(300, 300))
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
@@ -89,9 +89,10 @@ print(f"playing {mode}")
 if mode == "PvP":
     layout = [
         [sg.Text(f"Playing {mode}, How many players?")],
-        [sg.Button("Two"),sg.Button("Three"),sg.Button("Four")]
+        [sg.Button("Two"), sg.Button("Three"), sg.Button("Four")]
     ]
-    window = sg.Window(title="Initializing...", layout=layout, margins= (400,400))
+    window = sg.Window(title="Initializing...",
+                       layout=layout, margins=(300, 300))
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
@@ -99,13 +100,13 @@ if mode == "PvP":
         else:
             match event:
                 case "Two":
-                    amt=2
+                    amt = 2
                     break
                 case "Three":
-                    amt=3
+                    amt = 3
                     break
                 case "Four":
-                    amt=4
+                    amt = 4
                     break
     window.close()
     layoutArr = []
@@ -114,7 +115,8 @@ if mode == "PvP":
         layoutArr.append([sg.Multiline(key=f'pvpname{i}')])
     layoutArr.append(sg.Button("Submit"))
     layout = [layoutArr]
-    window = sg.Window(title="Initializing...", layout=layout, margins= (400,400))
+    window = sg.Window(title="Initializing...",
+                       layout=layout, margins=(300, 300))
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
@@ -123,15 +125,16 @@ if mode == "PvP":
             print("Submitted")
             for i in range(amt):
                 players.append(Player(values[f"pvpname{i}"], []))
-                
+
             break
 
 if mode == "PvHouse":
     layout = [
         [sg.Text(f"Welcome! What is your name?")],
-        [sg.Multiline(key="pvhname"),sg.Button("Submit")]
+        [sg.Multiline(key="pvhname"), sg.Button("Submit")]
     ]
-    window = sg.Window(title="Initializing...", layout=layout, margins= (400,400))
+    window = sg.Window(title="Initializing...",
+                       layout=layout, margins=(300, 300))
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
@@ -166,7 +169,8 @@ if not bj:
     for player in players:
         while True:
             leftCol = [
-                [sg.Text(f"({player.name}) You have {total(player.hand)} (hand: {player.hand})")],
+                [sg.Text(
+                    f"({player.name}) You have {total(player.hand)} (hand: {player.hand})")],
                 [sg.Text(f"({player.name}) Add another card?")],
                 [sg.Button("Hit"), sg.Button("Pass")],
             ]
@@ -182,7 +186,8 @@ if not bj:
                     sg.Column(rightCol),
                 ]
             ]
-            window = sg.Window(title="Blackjack", layout=layout, margins= (400,400))
+            window = sg.Window(title="Blackjack",
+                               layout=layout, margins=(300, 300))
             while True:
                 event, values = window.read()
                 if event == sg.WIN_CLOSED:
@@ -203,8 +208,10 @@ if not bj:
                 giveCard(player, deck)
                 if total(player.hand) > 21:
                     leftCol = [
-                        [sg.Text(f"({player.name}) You have {total(player.hand)} (hand: {player.hand})")],
-                        [sg.Text(f"({player.name}) You busted with {total(player.hand)}! (Hand: {player.hand})")],
+                        [sg.Text(
+                            f"({player.name}) You have {total(player.hand)} (hand: {player.hand})")],
+                        [sg.Text(
+                            f"({player.name}) You busted with {total(player.hand)}! (Hand: {player.hand})")],
                         [sg.Button("Pass Turn")],
                     ]
 
@@ -219,7 +226,8 @@ if not bj:
                             sg.Column(rightCol),
                         ]
                     ]
-                    window = sg.Window(title="Blackjack", layout=layout, margins= (400,400))
+                    window = sg.Window(title="Blackjack",
+                                       layout=layout, margins=(300, 300))
                     while True:
                         event, values = window.read()
                         if event == "Pass Turn":
@@ -242,7 +250,8 @@ if mode != "PvP" and not bj:
     housePass = 0
     while htotal < 21:
         leftCol = [
-            [sg.Text(f"({house.name}) You have {total(house.hand)} (hand: {house.hand})")],
+            [sg.Text(
+                f"({house.name}) You have {total(house.hand)} (hand: {house.hand})")],
             [sg.Text(f"({house.name}) Add another card?")],
             [sg.Button("Continue")],
         ]
@@ -258,7 +267,8 @@ if mode != "PvP" and not bj:
                 sg.Column(rightCol),
             ]
         ]
-        window = sg.Window(title="Blackjack", layout=layout, margins= (400,400))
+        window = sg.Window(title="Blackjack", layout=layout,
+                           margins=(300, 300))
         while True:
             event, values = window.read()
             if event == sg.WIN_CLOSED:
@@ -272,10 +282,12 @@ if mode != "PvP" and not bj:
                     window.close()
                     break
                 window.close()
-                if total(house.hand) > 21:                 
+                if total(house.hand) > 21:
                     leftCol = [
-                        [sg.Text(f"({house.name}) You have {total(house.hand)} (hand: {house.hand})")],
-                        [sg.Text(f"({house.name}) has busted with {total(house.hand)}! (Hand: {house.hand})")],
+                        [sg.Text(
+                            f"({house.name}) You have {total(house.hand)} (hand: {house.hand})")],
+                        [sg.Text(
+                            f"({house.name}) has busted with {total(house.hand)}! (Hand: {house.hand})")],
                         [sg.Button("Pass Turn")],
                     ]
 
@@ -290,7 +302,8 @@ if mode != "PvP" and not bj:
                             sg.Column(rightCol),
                         ]
                     ]
-                    window = sg.Window(title="Blackjack", layout=layout, margins= (400,400))
+                    window = sg.Window(title="Blackjack",
+                                       layout=layout, margins=(300, 300))
                     while True:
                         event, values = window.read()
                         if event == "Pass Turn":
@@ -312,7 +325,8 @@ if mode != "PvP" and not bj:
     players.append(house)
 
 if len(winner) > 0 and fcc:
-    print(f"FIVE CARD CHARLIE!!! {winner[0].name} WINS!!! (Hand: {winner[0].hand})")
+    print(
+        f"FIVE CARD CHARLIE!!! {winner[0].name} WINS!!! (Hand: {winner[0].hand})")
 
 if not fcc and not bj:
     for player in players:
@@ -338,7 +352,7 @@ if not fcc and not bj:
         for player in winner:
             try:
                 amt = data[player.name]
-                amt +=1
+                amt += 1
                 entry = f"{{\"{player.name}\": {amt}}}"
                 newEntry = json.loads(entry)
                 data.update(newEntry)
@@ -356,7 +370,7 @@ if not fcc and not bj:
 
         lbStr = ""
         for key in data:
-            lbStr+=f"{key} - {data[key]}\n"
+            lbStr += f"{key} - {data[key]}\n"
 
         leftCol = [
             [sg.Text(f"{player.name} wins! (Hand: {player.hand})")],
@@ -375,7 +389,8 @@ if not fcc and not bj:
                 sg.Column(rightCol),
             ]
         ]
-        window = sg.Window(title="Blackjack", layout=layout, margins= (400,400))
+        window = sg.Window(title="Blackjack", layout=layout,
+                           margins=(300, 300))
         while True:
             event, values = window.read()
             if event == sg.WIN_CLOSED or event == "Continue":
