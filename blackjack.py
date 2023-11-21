@@ -1,7 +1,9 @@
 import random
 import time
 import os
+os.system("pip install pysimplegui")
 import PySimpleGUI as sg
+import json
 
 
 class Player:
@@ -9,7 +11,6 @@ class Player:
         self.name = name
         self.hand = hand
 
-os.system("pip install pysimplegui")
 
 def total(hand):
     num = 0
@@ -159,20 +160,6 @@ for i in range(0, 2):
 bj = False
 fcc = False
 
-# Remove the ability to win instantly (helps with flow)
-# for player in players:
-#     insta = total(player.hand)
-#     if insta == 21:
-#         winner.append(player)
-#         bj = True
-# if mode != "PvP":
-#     insta = total(house.hand)
-#     if insta == 21:
-#         winner.append(house)
-#         bj = True
-
-#######################################
-
 response = ""
 playerPass = 0
 if not bj:
@@ -247,8 +234,6 @@ if not bj:
                         winner.append(player)
                         fcc = True
                         break
-        os.system("cls")
-        # print("-------------------------------------------------------------------")
         if len(winner) > 0:
             break
 
@@ -256,11 +241,10 @@ if mode != "PvP" and not bj:
     htotal = total(house.hand)
     housePass = 0
     while htotal < 21:
-#########################################################################################
         leftCol = [
             [sg.Text(f"({house.name}) You have {total(house.hand)} (hand: {house.hand})")],
             [sg.Text(f"({house.name}) Add another card?")],
-            [sg.Button("Hit"), sg.Button("Pass")],
+            [sg.Button("Continue")],
         ]
 
         rightCol = [
@@ -279,37 +263,56 @@ if mode != "PvP" and not bj:
             event, values = window.read()
             if event == sg.WIN_CLOSED:
                 exit()
-            time.sleep(1)
-            window.write_event_value("close", "1 second passed")
-            if event == "close":
+            if event == "Continue":
+                needed = 21 - htotal
+                if needed > 4:
+                    giveCard(house, deck)
+                else:
+                    housePass = 1
+                    window.close()
+                    break
                 window.close()
-            needed = 21 - htotal
-            if needed > 4:
-                giveCard(house, deck)
-            else:
-                housePass = 1
-                break
-            if total(house.hand) > 21:
-                print(f"The House has busted! (Hand: {house.hand})")
-                housePass = 1
-                break
-            else:
-                htotal = total(house.hand)
+                if total(house.hand) > 21:                 
+                    leftCol = [
+                        [sg.Text(f"({house.name}) You have {total(house.hand)} (hand: {house.hand})")],
+                        [sg.Text(f"({house.name}) has busted with {total(house.hand)}! (Hand: {house.hand})")],
+                        [sg.Button("Pass Turn")],
+                    ]
+
+                    rightCol = [
+                        [sg.Text("Placeholder")]
+                    ]
+
+                    layout = [
+                        [
+                            sg.Column(leftCol),
+                            sg.VSeparator(),
+                            sg.Column(rightCol),
+                        ]
+                    ]
+                    window = sg.Window(title="Blackjack", layout=layout, margins= (400,400))
+                    while True:
+                        event, values = window.read()
+                        if event == "Pass Turn":
+                            window.close()
+                            playerPass = 1
+                            break
+                    housePass = 1
+                    window.close()
+                    break
+                else:
+                    htotal = total(house.hand)
+                    window.close()
+                    break
         if housePass:
+            window.close()
             housePass = 0
             break
-            
-#########################################################################################
 
-    print("-------------------------------------------------------------------")
     players.append(house)
 
 if len(winner) > 0 and fcc:
     print(f"FIVE CARD CHARLIE!!! {winner[0].name} WINS!!! (Hand: {winner[0].hand})")
-
-if len(winner) > 0 and bj:
-    for player in winner:
-        print(f"BLACKJACK!!! {player.name} WINS!!! (Hand: {player.hand})")
 
 if not fcc and not bj:
     for player in players:
@@ -320,17 +323,60 @@ if not fcc and not bj:
                     winner.append(player)
                     continue
                 if total(player.hand) == total(winner[0].hand):
-                    winner.append(player)
+                    if len(player.hand) < len(winner[0].hand):
+                        winner.clear()
+                        winner.append(player)
+                    elif len(player.hand) == len(winner[0].hand):
+                        winner.append(player)
             else:
                 winner.append(player)
 
 if not fcc and not bj:
     for player in winner:
-        print(f"{player.name} wins! (Hand: {player.hand})")
-        if mode != "PvP":
-            print(f"House hand: {house.hand}")
+        file = open("leaderboard.json", "r+")
+        data = json.load(file)
+        for player in winner:
+            try:
+                amt = data[player.name]
+                amt +=1
+                entry = f"{{\"{player.name}\": {amt}}}"
+                newEntry = json.loads(entry)
+                data.update(newEntry)
+                file.truncate(0)
+                file.seek(0)
+                json.dump(data, file)
+                file.close()
+            except KeyError:
+                entry = f"{{\"{player.name}\": 1}}"
+                newEntry = json.loads(entry)
+                data.update(newEntry)
+                file.truncate(0)
+                file.seek(0)
+                json.dump(data, file)
 
-while True:
-    close = input("Type \"Quit\" to quit: ")
-    if close.lower() == "quit":
-        break
+        lbStr = ""
+        for key in data:
+            lbStr+=f"{key} - {data[key]}\n"
+
+        leftCol = [
+            [sg.Text(f"{player.name} wins! (Hand: {player.hand})")],
+            [sg.Text(f"Total = {total(player.hand)}")],
+            [sg.Button("Continue")],
+        ]
+
+        rightCol = [
+            [sg.Text(lbStr)]
+        ]
+
+        layout = [
+            [
+                sg.Column(leftCol),
+                sg.VSeparator(),
+                sg.Column(rightCol),
+            ]
+        ]
+        window = sg.Window(title="Blackjack", layout=layout, margins= (400,400))
+        while True:
+            event, values = window.read()
+            if event == sg.WIN_CLOSED or event == "Continue":
+                exit()
