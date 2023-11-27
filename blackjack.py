@@ -110,7 +110,7 @@ layout = [
     [sg.Button("PvP"), sg.Button("PvHouse")]
 ]
 window = sg.Window(title="Initializing...", layout=layout,
-                   margins=(300, 300))
+                   size=(1920,1080), element_justification='c')
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
@@ -135,7 +135,7 @@ if mode == "PvP":
         [sg.Button("Two"), sg.Button("Three"), sg.Button("Four")]
     ]
     window = sg.Window(title="Initializing...",
-                       layout=layout, margins=(300, 300))
+                       layout=layout, size=(1920,1080), element_justification='c')
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
@@ -159,7 +159,7 @@ if mode == "PvP":
     layoutArr.append(sg.Button("Submit"))
     layout = [layoutArr]
     window = sg.Window(title="Initializing...",
-                       layout=layout, margins=(300, 300))
+                       layout=layout, size=(1920,1080), element_justification='c')
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
@@ -177,7 +177,7 @@ if mode == "PvHouse":
         [sg.Multiline(key="pvhname"), sg.Button("Submit")]
     ]
     window = sg.Window(title="Initializing...",
-                       layout=layout, margins=(300, 300))
+                       layout=layout, size=(1920,1080), element_justification='c')
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
@@ -230,7 +230,7 @@ if not bj:
                 ]
             ]
             window = sg.Window(title="Blackjack",
-                               layout=layout, margins=(300, 300))
+                               layout=layout, size=(1920,1080), element_justification='c')
             while True:
                 event, values = window.read()
                 if event == sg.WIN_CLOSED:
@@ -270,7 +270,7 @@ if not bj:
                         ]
                     ]
                     window = sg.Window(title="Blackjack",
-                                       layout=layout, margins=(300, 300))
+                                       layout=layout, size=(1920,1080), element_justification='c')
                     while True:
                         event, values = window.read()
                         if event == "Pass Turn":
@@ -309,7 +309,7 @@ if mode != "PvP" and not bj:
             ]
         ]
         window = sg.Window(title="Blackjack", layout=layout,
-                           margins=(300, 300))
+                           size=(1920,1080), element_justification='c')
         while True:
             event, values = window.read()
             if event == sg.WIN_CLOSED:
@@ -342,7 +342,7 @@ if mode != "PvP" and not bj:
                         ]
                     ]
                     window = sg.Window(title="Blackjack",
-                                       layout=layout, margins=(300, 300))
+                                       layout=layout, size=(1920,1080), element_justification='c')
                     while True:
                         event, values = window.read()
                         if event == "Pass Turn":
@@ -429,7 +429,7 @@ for player in winner:
         ]
     ]
     window = sg.Window(title="Blackjack", layout=layout,
-                        margins=(300, 300))
+                        size=(1920,1080), element_justification='c')
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED or event == "Continue":
@@ -453,7 +453,7 @@ if len(winner) == 0:
         ]
     ]
     window = sg.Window(title="Blackjack", layout=layout,
-                       margins=(300, 300))
+                       size=(1920,1080), element_justification='c')
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED or event == "Continue":
