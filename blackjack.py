@@ -1,18 +1,23 @@
 import json
 import PySimpleGUI as sg
 import random
-import time
 import os
 os.system("pip install pysimplegui")
 
 theme = "DarkBrown1"
 sg.theme(theme)
 
+winner = []
+players = []
+house = None
+amt = 1
+
 
 class Player:
-    def __init__(self, name, hand):
+    def __init__(self, name, hand, cards):
         self.name = name
         self.hand = hand
+        self.cards = cards
 
 
 def total(hand):
@@ -40,17 +45,50 @@ def total(hand):
     return num
 
 
+def RightSide(turn_player: Player):
+    playerHand = [[]]
+    otherHands = [[]]
+    for card in turn_player.cards:
+        playerHand[0].append(sg.Image(card, size=(167, 224)))
+        pass
+    for i in range(len(players)):
+        if not players[i] == turn_player:
+            otherHands[0].append(sg.Text(players[i].name+":"))
+            for j in range(len(players[i].hand)):
+                if j == 0:
+                    otherHands[0].append(
+                        sg.Image(players[i].cards[j], size=(167, 224)))
+                    continue
+                otherHands[0].append(
+                    sg.Image("deck\\Back.png", size=(167, 224)))
+            if not turn_player == players[-1]:
+                if not i == len(players)-1:
+                    otherHands[0].append(sg.VSeparator())
+            else:
+                if not i == len(players)-2:
+                    otherHands[0].append(sg.VSeparator())
+    sgRightSide = [[sg.Column(playerHand, justification='center')], [sg.HSeparator()],
+                   [sg.Column(otherHands)]]
+    return sgRightSide
+
+
 def giveCard(user, cards):
     card = random.sample(cards, 1)[0]
     loc = cards.index(card)
     cards.pop(loc)
     user.hand.append(card)
+    suit = random.randint(1, 4)
+    match suit:
+        case 1:
+            user.cards.append(f"deck\\Clubs\\{str(card)}Cl.png")
+        case 2:
+            user.cards.append(f"deck\\Diamonds\\{str(card)}Da.png")
+        case 3:
+            user.cards.append(f"deck\\Hearts\\{str(card)}He.png")
+        case 4:
+            user.cards.append(f"deck\\Spades\\{str(card)}Sp.png")
 
 
-winner = []
-players = []
-house = None
-amt = 1
 deck = ["A", "A", "A", "A",
         2, 2, 2, 2,
         3, 3, 3, 3,
@@ -85,6 +123,7 @@ while True:
             case "PvHouse":
                 mode = "PvHouse"
                 break
+
         print("ERROR")
         break
 window.close()
@@ -128,7 +167,7 @@ if mode == "PvP":
         if event == "Submit":
             print("Submitted")
             for i in range(amt):
-                players.append(Player(values[f"pvpname{i}"], []))
+                players.append(Player(values[f"pvpname{i}"], [], []))
 
             break
 
@@ -144,8 +183,8 @@ if mode == "PvHouse":
         if event == sg.WIN_CLOSED:
             exit()
         if event == "Submit":
-            p1 = Player(values["pvhname"], [])
-            house = Player("House", [])
+            p1 = Player(values["pvhname"], [], [])
+            house = Player("House", [], [])
             players = [p1]
             break
 
@@ -174,14 +213,12 @@ if not bj:
         while True:
             leftCol = [
                 [sg.Text(
-                    f"({player.name}) You have {total(player.hand)} (hand: {player.hand})")],
+                    f"({player.name}) You have {total(player.hand)}")],
                 [sg.Text(f"({player.name}) Add another card?")],
                 [sg.Button("Hit"), sg.Button("Pass")],
             ]
 
-            rightCol = [
-                [sg.Text("Placeholder")]
-            ]
+            rightCol = RightSide(player)
 
             layout = [
                 [
@@ -376,6 +413,7 @@ if not fcc and not bj:
         for key in data:
             lbStr += f"{key} - {data[key]}\n"
 
+        file.close()
         leftCol = [
             [sg.Text(f"{player.name} wins! (Hand: {player.hand})")],
             [sg.Text(f"Total = {total(player.hand)}")],
