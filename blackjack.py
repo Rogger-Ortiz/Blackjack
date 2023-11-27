@@ -284,11 +284,6 @@ if not bj:
                 if playerPass:
                     playerPass = 0
                     break
-                else:
-                    if len(player.hand) == 5:
-                        winner.append(player)
-                        fcc = True
-                        break
         if len(winner) > 0:
             break
 
@@ -369,10 +364,6 @@ if mode != "PvP" and not bj:
 
     #players.append(house)
 
-if len(winner) > 0 and fcc:
-    print(
-        f"FIVE CARD CHARLIE!!! {winner[0].name} WINS!!! (Hand: {winner[0].hand})")
-
 if not fcc and not bj:
     for player in players:
         if total(player.hand) <= 21:
@@ -387,6 +378,10 @@ if not fcc and not bj:
                         winner.append(player)
                     elif len(player.hand) == len(winner[0].hand):
                         winner.append(player)
+            if len(player.hand == 5):
+                winner.clear()
+                winner.append(player)
+                break
             else:
                 winner.append(player)
 
