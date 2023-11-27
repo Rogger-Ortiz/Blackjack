@@ -378,45 +378,49 @@ if not fcc and not bj:
                         winner.append(player)
                     elif len(player.hand) == len(winner[0].hand):
                         winner.append(player)
-            if len(player.hand == 5):
+            
+            else:
+                winner.append(player)
+            if len(player.hand) == 5:
                 winner.clear()
                 winner.append(player)
                 break
-            else:
-                winner.append(player)
 
 for player in winner:
     file = open("leaderboard.json", "r+")
     data = json.load(file)
-    for player in winner:
-        try:
-            amt = data[player.name]
-            amt += 1
-            entry = f"{{\"{player.name}\": {amt}}}"
-            newEntry = json.loads(entry)
-            data.update(newEntry)
-            file.truncate(0)
-            file.seek(0)
-            json.dump(data, file)
-            file.close()
-        except KeyError:
-            entry = f"{{\"{player.name}\": 1}}"
-            newEntry = json.loads(entry)
-            data.update(newEntry)
-            file.truncate(0)
-            file.seek(0)
-            json.dump(data, file)
+    try:
+        amt = data[player.name]
+        amt += 1
+        entry = f"{{\"{player.name}\": {amt}}}"
+        newEntry = json.loads(entry)
+        data.update(newEntry)
+        file.truncate(0)
+        file.seek(0)
+        json.dump(data, file)
+        file.close()
+    except KeyError:
+        entry = f"{{\"{player.name}\": 1}}"
+        newEntry = json.loads(entry)
+        data.update(newEntry)
+        file.truncate(0)
+        file.seek(0)
+        json.dump(data, file)
+    file.close()
 
+if len(winner) > 0:
+    file = open("leaderboard.json", "r+")
+    data = json.load(file)
     lbStr = ""
     for key in data:
         lbStr += f"{key} - {data[key]}\n"
     file.close()
 
-    leftCol = [
-        [sg.Text(f"{player.name} wins! (Hand: {player.hand})")],
-        [sg.Text(f"Total = {total(player.hand)}")],
-        [sg.Button("Continue")],
-    ]
+    leftCol = []
+    for player in winner:
+        leftCol.append([sg.Text(f"{player.name} wins! (Hand: {player.hand})")])
+    leftCol.append([sg.Text(f"Total = {total(player.hand)}")])
+    leftCol.append([sg.Button("Continue")])
 
     rightCol = [
         [sg.Text(lbStr)]
