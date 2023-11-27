@@ -57,7 +57,7 @@ def RightSide(turn_player: Player):
             for j in range(len(players[i].hand)):
                 if j == 0:
                     otherHands[0].append(
-                        sg.Image(players[i].cards[j], size=(167, 224)))
+                        sg.Image(players[i].cards[j], size=(167, 224), pad=(0,0)))
                     continue
                 otherHands[0].append(
                     sg.Image("deck\\Back.png", size=(167, 224)))
@@ -185,7 +185,7 @@ if mode == "PvHouse":
         if event == "Submit":
             p1 = Player(values["pvhname"], [], [])
             house = Player("House", [], [])
-            players = [p1]
+            players = [p1, house]
             break
 
 window.close()
@@ -200,8 +200,8 @@ if mode != "PvP" and mode != "PvHouse":
 for i in range(0, 2):
     for player in players:
         giveCard(player, deck)
-        if mode != "PvP":
-            giveCard(house, deck)
+        # if mode != "PvP":
+        #     giveCard(house, deck)
 
 bj = False
 fcc = False
@@ -211,6 +211,8 @@ playerPass = 0
 if not bj:
     for player in players:
         while True:
+            if player == house:
+                break
             leftCol = [
                 [sg.Text(
                     f"({player.name}) You have {total(player.hand)}")],
@@ -297,9 +299,7 @@ if mode != "PvP" and not bj:
             [sg.Button("Continue")],
         ]
 
-        rightCol = [
-            [sg.Text("Placeholder")]
-        ]
+        rightCol = RightSide(house)
 
         layout = [
             [
@@ -332,9 +332,7 @@ if mode != "PvP" and not bj:
                         [sg.Button("Pass Turn")],
                     ]
 
-                    rightCol = [
-                        [sg.Text("Placeholder")]
-                    ]
+                    rightCol = RightSide(house)
 
                     layout = [
                         [
@@ -363,7 +361,7 @@ if mode != "PvP" and not bj:
             housePass = 0
             break
 
-    players.append(house)
+    #players.append(house)
 
 if len(winner) > 0 and fcc:
     print(
@@ -386,54 +384,77 @@ if not fcc and not bj:
             else:
                 winner.append(player)
 
-if not fcc and not bj:
+for player in winner:
+    file = open("leaderboard.json", "r+")
+    data = json.load(file)
     for player in winner:
-        file = open("leaderboard.json", "r+")
-        data = json.load(file)
-        for player in winner:
-            try:
-                amt = data[player.name]
-                amt += 1
-                entry = f"{{\"{player.name}\": {amt}}}"
-                newEntry = json.loads(entry)
-                data.update(newEntry)
-                file.truncate(0)
-                file.seek(0)
-                json.dump(data, file)
-                file.close()
-            except KeyError:
-                entry = f"{{\"{player.name}\": 1}}"
-                newEntry = json.loads(entry)
-                data.update(newEntry)
-                file.truncate(0)
-                file.seek(0)
-                json.dump(data, file)
+        try:
+            amt = data[player.name]
+            amt += 1
+            entry = f"{{\"{player.name}\": {amt}}}"
+            newEntry = json.loads(entry)
+            data.update(newEntry)
+            file.truncate(0)
+            file.seek(0)
+            json.dump(data, file)
+            file.close()
+        except KeyError:
+            entry = f"{{\"{player.name}\": 1}}"
+            newEntry = json.loads(entry)
+            data.update(newEntry)
+            file.truncate(0)
+            file.seek(0)
+            json.dump(data, file)
 
-        lbStr = ""
-        for key in data:
-            lbStr += f"{key} - {data[key]}\n"
+    lbStr = ""
+    for key in data:
+        lbStr += f"{key} - {data[key]}\n"
 
-        file.close()
-        leftCol = [
-            [sg.Text(f"{player.name} wins! (Hand: {player.hand})")],
-            [sg.Text(f"Total = {total(player.hand)}")],
-            [sg.Button("Continue")],
+    file.close()
+    leftCol = [
+        [sg.Text(f"{player.name} wins! (Hand: {player.hand})")],
+        [sg.Text(f"Total = {total(player.hand)}")],
+        [sg.Button("Continue")],
+    ]
+
+    rightCol = [
+        [sg.Text(lbStr)]
+    ]
+
+    layout = [
+        [
+            sg.Column(leftCol),
+            sg.VSeparator(),
+            sg.Column(rightCol),
         ]
+    ]
+    window = sg.Window(title="Blackjack", layout=layout,
+                        margins=(300, 300))
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == "Continue":
+            exit()
 
-        rightCol = [
-            [sg.Text(lbStr)]
-        ]
+if len(winner) == 0:
+    leftCol = [
+        [sg.Text(f"Nobody wins!")],
+        [sg.Button("Continue")],
+    ]
 
-        layout = [
-            [
-                sg.Column(leftCol),
-                sg.VSeparator(),
-                sg.Column(rightCol),
-            ]
+    rightCol = [
+        [sg.Text("...do you not know how to play???")]
+    ]
+
+    layout = [
+        [
+            sg.Column(leftCol),
+            sg.VSeparator(),
+            sg.Column(rightCol),
         ]
-        window = sg.Window(title="Blackjack", layout=layout,
-                           margins=(300, 300))
-        while True:
-            event, values = window.read()
-            if event == sg.WIN_CLOSED or event == "Continue":
-                exit()
+    ]
+    window = sg.Window(title="Blackjack", layout=layout,
+                       margins=(300, 300))
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == "Continue":
+            exit()
