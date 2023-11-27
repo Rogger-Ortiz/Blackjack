@@ -263,9 +263,7 @@ if not bj:
                         [sg.Button("Pass Turn")],
                     ]
 
-                    rightCol = [
-                        [sg.Text("Placeholder")]
-                    ]
+                    rightCol = RightSide(player)
 
                     layout = [
                         [
