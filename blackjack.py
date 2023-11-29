@@ -57,7 +57,7 @@ def RightSide(turn_player: Player):
             for j in range(len(players[i].hand)):
                 if j == 0:
                     otherHands[0].append(
-                        sg.Image(players[i].cards[j], size=(167, 224), pad=(0,0)))
+                        sg.Image(players[i].cards[j], size=(167, 224), pad=(0, 0)))
                     continue
                 otherHands[0].append(
                     sg.Image("deck\\Back.png", size=(167, 224)))
@@ -110,7 +110,7 @@ layout = [
     [sg.Button("PvP"), sg.Button("PvHouse")]
 ]
 window = sg.Window(title="Initializing...", layout=layout,
-                   size=(1920,1080), element_justification='c', finalize=True, resizable=True)
+                   size=(1920, 1080), element_justification='c', finalize=True, resizable=True)
 window.maximize()
 while True:
     event, values = window.read()
@@ -136,7 +136,7 @@ if mode == "PvP":
         [sg.Button("Two"), sg.Button("Three"), sg.Button("Four")]
     ]
     window = sg.Window(title="Initializing...",
-                       layout=layout, size=(1920,1080), element_justification='c', finalize=True, resizable=True)
+                       layout=layout, size=(1920, 1080), element_justification='c', finalize=True, resizable=True)
     window.maximize()
     while True:
         event, values = window.read()
@@ -161,7 +161,7 @@ if mode == "PvP":
     layoutArr.append(sg.Button("Submit"))
     layout = [layoutArr]
     window = sg.Window(title="Initializing...",
-                       layout=layout, size=(1920,1080), element_justification='c', finalize=True, resizable=True)
+                       layout=layout, size=(1920, 1080), element_justification='c', finalize=True, resizable=True)
     window.maximize()
     while True:
         event, values = window.read()
@@ -180,7 +180,7 @@ if mode == "PvHouse":
         [sg.Multiline(key="pvhname"), sg.Button("Submit")]
     ]
     window = sg.Window(title="Initializing...",
-                       layout=layout, size=(1920,1080), element_justification='c', finalize=True, resizable=True)
+                       layout=layout, size=(1920, 1080), element_justification='c', finalize=True, resizable=True)
     window.maximize()
     while True:
         event, values = window.read()
@@ -234,7 +234,7 @@ if not bj:
                 ]
             ]
             window = sg.Window(title="Blackjack",
-                               layout=layout, size=(1920,1080), element_justification='c', finalize=True, resizable=True)
+                               layout=layout, size=(1920, 1080), element_justification='c', finalize=True, resizable=True)
             window.maximize()
             while True:
                 event, values = window.read()
@@ -273,7 +273,7 @@ if not bj:
                         ]
                     ]
                     window = sg.Window(title="Blackjack",
-                                       layout=layout, size=(1920,1080), element_justification='c', finalize=True, resizable=True)
+                                       layout=layout, size=(1920, 1080), element_justification='c', finalize=True, resizable=True)
                     window.maximize()
                     while True:
                         event, values = window.read()
@@ -308,7 +308,7 @@ if mode != "PvP" and not bj:
             ]
         ]
         window = sg.Window(title="Blackjack", layout=layout,
-                           size=(1920,1080), element_justification='c', finalize=True, resizable=True)
+                           size=(1920, 1080), element_justification='c', finalize=True, resizable=True)
         window.maximize()
         while True:
             event, values = window.read()
@@ -342,7 +342,7 @@ if mode != "PvP" and not bj:
                         ]
                     ]
                     window = sg.Window(title="Blackjack",
-                                       layout=layout, size=(1920,1080), element_justification='c', finalize=True, resizable=True)
+                                       layout=layout, size=(1920, 1080), element_justification='c', finalize=True, resizable=True)
                     window.maximize()
                     while True:
                         event, values = window.read()
@@ -362,7 +362,7 @@ if mode != "PvP" and not bj:
             housePass = 0
             break
 
-    #players.append(house)
+    # players.append(house)
 
 if not fcc and not bj:
     for player in players:
@@ -378,7 +378,7 @@ if not fcc and not bj:
                         winner.append(player)
                     elif len(player.hand) == len(winner[0].hand):
                         winner.append(player)
-            
+
             else:
                 winner.append(player)
             if len(player.hand) == 5:
@@ -418,7 +418,8 @@ if len(winner) > 0:
 
     leftCol = []
     for player in winner:
-        leftCol.append([sg.Text(f"{player.name} wins! (Hand: {player.hand})")])
+        leftCol.append(
+            [sg.Text(f"{player.name} wins with {total(player.hand)}!")])
     leftCol.append([sg.Text(f"Total = {total(player.hand)}")])
     leftCol.append([sg.Button("Continue")])
 
@@ -434,7 +435,7 @@ if len(winner) > 0:
         ]
     ]
     window = sg.Window(title="Blackjack", layout=layout,
-                        size=(1920,1080), element_justification='c', finalize=True, resizable=True)
+                       size=(1920, 1080), element_justification='c', finalize=True, resizable=True)
     window.maximize()
     while True:
         event, values = window.read()
@@ -459,7 +460,7 @@ if len(winner) == 0:
         ]
     ]
     window = sg.Window(title="Blackjack", layout=layout,
-                       size=(1920,1080), element_justification='c', finalize=True, resizable=True)
+                       size=(1920, 1080), element_justification='c', finalize=True, resizable=True)
     window.maximize()
     while True:
         event, values = window.read()
